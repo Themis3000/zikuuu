@@ -1,2 +1,2 @@
 discord.py
-pickledb.py
+https://github.com/patx/pickledb.git
