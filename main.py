@@ -20,11 +20,9 @@ async def on_ready():
 @client.event
 async def on_message(message):
     arguments = message.content.split(" ")
-    if message.content.startswith('+test'):
-        print('here')
-        await client.add_reaction(message, '✅')
     if message.content.startswith('+ping'):
         await client.send_message(message.channel, 'Pong!')
+
     if message.content.startswith('+buttonarray'):
         if message.author.server_permissions.administrator:
             array = message.content[13:].split(', ')
