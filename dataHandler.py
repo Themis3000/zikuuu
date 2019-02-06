@@ -15,4 +15,3 @@ def find_message(messageid):
 def get_button(messageid, button):
     message_data = db.get(messageid)
     return message_data[1][message_data[0].index(button)]
-
