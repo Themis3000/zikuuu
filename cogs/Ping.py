@@ -6,9 +6,9 @@ class Ping:
         self.bot = bot
 
     @commands.command(pass_context=True)
-    async def ping(self):
+    async def ping(self, ctx):
         """Pong!"""
-        await self.bot.say("Pong!")
+        await ctx.send("Pong!")
 
 
 def setup(bot):
