@@ -1,5 +1,6 @@
 from discord.ext import commands
 
+# todo:Themi Make this part of a bigger "Core" class with other "core" commands
 
 class Ping:
     def __init__(self, bot):
