@@ -1,0 +1,82 @@
+{
+   "status": [
+      {
+         "current": "online"
+      },
+      {
+         "options": [
+            "online",
+            "idle",
+            "offline",
+            "do_not_disturb"
+         ]
+      }
+   ],
+   "status_booting": [
+      {
+         "current": "idle"
+      },
+      {
+         "options": [
+            "online",
+            "idle",
+            "offline",
+            "do_not_disturb"
+         ]
+      }
+   ],
+   "game": [
+      {
+         "current": "+help"
+      },
+      {
+         "options": [
+            "ANY"
+         ]
+      }
+   ],
+   "game_booting": [
+      {
+         "current": "booting..."
+      },
+      {
+         "options": [
+            "ANY"
+         ]
+      }
+   ],
+   "prefix": [
+      {
+         "current": "+"
+      },
+      {
+         "options": [
+            "ANY"
+         ]
+      }
+   ],
+   "unload_cog": [
+      {
+         "current": [
+            "buttonroles"
+         ]
+      },
+      {
+         "options": [
+            "ANY"
+         ]
+      }
+   ],
+   "bot_owners": [
+      {
+         "current": [
+            "Cat Meow Meow#7380"
+         ]
+      },
+      {
+         "options": [
+            "ANY"
+         ]
+      }
+   ]
+}

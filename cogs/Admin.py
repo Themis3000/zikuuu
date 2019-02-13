@@ -9,10 +9,10 @@ class Admin:
 
     @commands.command(pass_context=True)
     @commands.has_role("Mod")
-    async def delete(self, ctx, amountstr: str):
+    async def delete(self, ctx, amount):
         """bulk deletes messages"""
         try:
-            amountint = int(amountstr)+1
+            amountint = int(amount)+1
         except:
             await ctx.send('Syntax error: argument 1 is not a number. use: !delete {Num to delete}')
         else:

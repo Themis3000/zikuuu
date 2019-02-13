@@ -1,20 +1,12 @@
+from utils.options import Options
 import os
 import discord
 from discord.ext import commands
-from discord.ext.commands import HelpFormatter
-from utils import permissions
 
 # todo:Themi figure out a better help format method, send help to users dm.
 
-
-class HelpFormat(HelpFormatter):
-    async def format_help_for(self, context, command_or_bot):
-        if permissions.can_react(context):
-            await context.message.add_reaction(chr(0x2709))
-            return await super().format_help_for(context, command_or_bot)
-
-
-client = commands.Bot(command_prefix='+', formatter=HelpFormat(), status=discord.Status.idle, activity=discord.Game(name="Booting..."))
+options = Options()
+client = commands.Bot(command_prefix='+', status=discord.Status.idle, activity=discord.Game(name="Booting..."))
 
 
 for file in os.listdir("cogs"):
@@ -28,8 +20,29 @@ async def on_ready():
     print("Ready to rumble")
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name="+help"))
 
-client.run(os.environ['TOKEN'])
 
+@client.event
+async def on_command_error(error, ctx):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await send_cmd_help(ctx)
+    elif isinstance(error, commands.BadArgument):
+        await send_cmd_help(ctx)
+
+
+async def send_cmd_help(ctx):
+    if ctx.invoked_subcommand:
+        pages = client.formatter.format_help_for(ctx, ctx.invoked_subcommand)
+        for page in pages:
+            await ctx.send_message(page)
+    else:
+        pages = client.formatter.format_help_for(ctx, ctx.command)
+        for page in pages:
+            await ctx.send_message(page)
+
+
+client.run(os.environ["TOKEN"])
+
+# todo:Themi add a !allow command to allow one time access to a voice channel
 # todo:Themi add more utils, especially for checking user perms
 # todo:Themi add a music bot with reaction based input, especially for song skip votes
 # todo:Themi add a currency and betting system, mabye even tie it into a huru like battle system
