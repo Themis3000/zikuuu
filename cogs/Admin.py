@@ -5,18 +5,11 @@ class Admin:
     def __init__(self, bot):
         self.bot = bot
 
-# todo:Themi figure out how to make the bot throw a syntax error in chat when ANY command it done wrong without doing a try for each. End goal: I can add commands without even thinking about making a syntax error out, it will do that for me
-
     @commands.command(pass_context=True)
     @commands.has_role("Mod")
-    async def delete(self, ctx, amount):
+    async def delete(self, ctx, amount: int):
         """bulk deletes messages"""
-        try:
-            amountint = int(amount)+1
-        except:
-            await ctx.send('Syntax error: argument 1 is not a number. use: !delete {Num to delete}')
-        else:
-            await ctx.channel.purge(limit=amountint)
+        await ctx.channel.purge(limit=amount)
 
 
 def setup(bot):

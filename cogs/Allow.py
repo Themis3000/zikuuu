@@ -7,13 +7,11 @@ class Allow:
         self.bot = bot
 
     @commands.command(pass_context=True)
-    async def allow(self, ctx, user='none'):
+    @commands.has_role("mod")
+    async def allow(self, ctx, user):
         """Allow someone to join the text channel you are in one time only"""
-        if user != 'none':
-            await commands.MemberConverter.convert(self=commands.Bot, ctx=ctx, argument=user)
-            await ctx.send(f"allowing {user}")
-        else:
-            await ctx.send(f"You did not specify a user, do +allow (user)")
+        await commands.MemberConverter.convert(ctx=ctx, argument=user)
+        await ctx.send(f"allowing {user}")
 
 
 def setup(bot):

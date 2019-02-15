@@ -1,6 +1,9 @@
 import json
 import os
 
+# todo:Themi fix set_current so it adds values to an array
+# todo:Themi make a way to remove items in a array
+
 
 class Options:
     file_path = os.path.join(os.path.dirname(__file__), '..', 'config.json')

@@ -69,9 +69,7 @@
    ],
    "bot_owners": [
       {
-         "current": [
-            "Cat Meow Meow#7380"
-         ]
+         "current": "Cat"
       },
       {
          "options": [
