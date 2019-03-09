@@ -5,7 +5,7 @@ from discord.ext import commands
 
 # todo:Themi figure out a better help format method, send help to users dm.
 
-client = commands.Bot(command_prefix='+', status=discord.Status(check_current("status_booting")), activity=discord.Game(name=check_current("game_booting")))
+client = commands.Bot(command_prefix=check_current("prefix"), status=discord.Status(check_current("status_booting")), activity=discord.Game(name=check_current("game_booting")))
 
 
 for file in os.listdir("cogs"):
