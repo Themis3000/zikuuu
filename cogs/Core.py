@@ -1,10 +1,7 @@
 from discord.ext import commands
-from utils.options import Options
+from utils.options import check_current, check_options, set_current
 from utils.makeReadable import array_to_readable
 from utils.checks import is_owner
-
-
-options = Options()
 
 
 class Core:
@@ -27,18 +24,18 @@ class Core:
         new_value = string[1:]
         if option != 'none':
             if new_value != 'none':
-                if option in options.check_options():
-                    if new_value in options.check_options(option) or "ANY" in options.check_options(option):
-                        options.set_current(option, new_value)
+                if option in check_options():
+                    if new_value in check_options(option) or "ANY" in check_options(option):
+                        set_current(option, new_value)
                         await ctx.send(f"successfully set `{option}` to `{new_value}`")
                     else:
-                        await ctx.send(f"I don't see that option, available options: `{array_to_readable(options.check_options(option))}`")
+                        await ctx.send(f"available options: `{array_to_readable(check_options(option))}`")
                 else:
-                    await ctx.send(f"I don't see that option, available options: `{array_to_readable(options.check_options(option))}`")
+                    await ctx.send(f"I don't see that option, available options: `{array_to_readable(check_options(option))}`")
             else:
-                await ctx.send(f"available options: `{array_to_readable(options.check_options(option))}`")
+                await ctx.send(f"available options: `{array_to_readable(check_options(option))}`")
         else:
-            await ctx.send(f"available options: `{array_to_readable(options.check_options())}`")
+            await ctx.send(f"available options: `{array_to_readable(check_options())}`")
 
 
 def setup(bot):
