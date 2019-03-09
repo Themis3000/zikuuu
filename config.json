@@ -8,7 +8,7 @@
             "online",
             "idle",
             "offline",
-            "do_not_disturb"
+            "dnd"
          ]
       }
    ],
@@ -21,13 +21,13 @@
             "online",
             "idle",
             "offline",
-            "do_not_disturb"
+            "dnd"
          ]
       }
    ],
    "game": [
       {
-         "current": "+help"
+         "current": "under construction!"
       },
       {
          "options": [
@@ -58,7 +58,7 @@
    "unload_cog": [
       {
          "current": [
-            "buttonroles"
+            "b"
          ]
       },
       {
@@ -69,7 +69,7 @@
    ],
    "bot_owners": [
       {
-         "current": "Cat"
+         "current": "Cat Meow Meow#7380"
       },
       {
          "options": [

@@ -6,7 +6,7 @@ from discord.ext import commands
 # todo:Themi figure out a better help format method, send help to users dm.
 
 options = Options()
-client = commands.Bot(command_prefix='+', status=discord.Status.idle, activity=discord.Game(name="Booting..."))
+client = commands.Bot(command_prefix='+', status=discord.Status(options.check_current("status_booting")), activity=discord.Game(name=options.check_current("game_booting")))
 
 
 for file in os.listdir("cogs"):
@@ -18,7 +18,7 @@ for file in os.listdir("cogs"):
 @client.event
 async def on_ready():
     print("Ready to rumble")
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name="+help"))
+    await client.change_presence(status=discord.Status(options.check_current("status")), activity=discord.Game(name=options.check_current("game")))
 
 # todo:Themi Move all of this to a new file
 # todo:Themi fix this absolute mess of code
@@ -26,14 +26,12 @@ async def on_ready():
 
 @client.event
 async def on_command_error(ctx, error):
-    if isinstance(error, commands.MissingRequiredArgument):
-        print(f"missing argument at {ctx.command}")
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send("You don't have the required perms to use that command")
+    elif isinstance(error, commands.MissingRequiredArgument):
         await send_cmd_help(ctx)
     elif isinstance(error, commands.BadArgument):
-        print(f"bad argument at {ctx.command}")
         await send_cmd_help(ctx)
-    elif isinstance(error, commands.CheckFailure):
-        print(f"check fail at {ctx.command}")
 
 
 async def send_cmd_help(ctx):

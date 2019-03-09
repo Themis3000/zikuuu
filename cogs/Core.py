@@ -16,12 +16,15 @@ class Core:
         """Pong!"""
         await ctx.send("Pong!")
 
-    # todo: Themi make it so it dosent split the last arg so you can set a value with spaces
-
     @commands.command()
     @is_owner()
-    async def change_config(self, ctx, option='none', new_value='none'):
+    async def change_config(self, ctx, option='none'):
         """Allows the bot owner to change the bots config settings"""
+        split = ctx.message.content.split(" ")
+        string = ""
+        for i in range(len(split) - 2):
+            string = string + f" {split[i+2]}"
+        new_value = string[1:]
         if option != 'none':
             if new_value != 'none':
                 if option in options.check_options():

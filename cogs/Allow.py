@@ -1,5 +1,4 @@
 from discord.ext import commands
-import asyncio
 
 
 class Allow:
@@ -7,10 +6,10 @@ class Allow:
         self.bot = bot
 
     @commands.command(pass_context=True)
-    @commands.has_role("mod")
+    @commands.has_role("Mod")
     async def allow(self, ctx, user):
         """Allow someone to join the text channel you are in one time only"""
-        await commands.MemberConverter.convert(ctx=ctx, argument=user)
+        print(await commands.MemberConverter.convert(ctx=ctx, argument=user))
         await ctx.send(f"allowing {user}")
 
 
