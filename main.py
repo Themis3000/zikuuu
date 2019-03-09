@@ -1,12 +1,11 @@
-from utils.options import Options
+from utils.options import check_current, check_options, set_current
 import os
 import discord
 from discord.ext import commands
 
 # todo:Themi figure out a better help format method, send help to users dm.
 
-options = Options()
-client = commands.Bot(command_prefix='+', status=discord.Status(options.check_current("status_booting")), activity=discord.Game(name=options.check_current("game_booting")))
+client = commands.Bot(command_prefix='+', status=discord.Status(check_current("status_booting")), activity=discord.Game(name=check_current("game_booting")))
 
 
 for file in os.listdir("cogs"):
@@ -18,7 +17,7 @@ for file in os.listdir("cogs"):
 @client.event
 async def on_ready():
     print("Ready to rumble")
-    await client.change_presence(status=discord.Status(options.check_current("status")), activity=discord.Game(name=options.check_current("game")))
+    await client.change_presence(status=discord.Status(check_current("status")), activity=discord.Game(name=check_current("game")))
 
 # todo:Themi Move all of this to a new file
 # todo:Themi fix this absolute mess of code
