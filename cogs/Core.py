@@ -11,7 +11,7 @@ class Core:
     @commands.command()
     async def ping(self, ctx):
         """Pong!"""
-        await ctx.send("Pong!")
+        await ctx.send(f"Pong! I am {str(self.bot.latency*1000)[:4]}ms latent to discord servers")
 
     @commands.command()
     @is_owner()

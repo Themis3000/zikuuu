@@ -21,6 +21,7 @@ async def on_ready():
 
 # todo:Themi Move all of this to a new file
 # todo:Themi fix this absolute mess of code
+# todo:Themi add more on command errors
 
 
 @client.event

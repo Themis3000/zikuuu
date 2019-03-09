@@ -5,7 +5,7 @@ class Admin:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.has_role("Mod")
     async def delete(self, ctx, amount: int):
         """bulk deletes messages"""

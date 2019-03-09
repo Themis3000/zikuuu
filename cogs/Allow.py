@@ -1,16 +1,31 @@
 from discord.ext import commands
+import discord
+import asyncio
+from utils.checks import in_channel
 
 
 class Allow:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @commands.command()
     @commands.has_role("Mod")
-    async def allow(self, ctx, user):
-        """Allow someone to join the text channel you are in one time only"""
-        print(await commands.MemberConverter.convert(ctx=ctx, argument=user))
-        await ctx.send(f"allowing {user}")
+    async def allow(self, ctx, member: discord.Member):
+        """Allow someone to join the voice channel you are in one time only"""
+        channel = ctx.author.voice.channel
+        await channel.set_permissions(member, connect=True, speak=True)
+        await ctx.send(f"`allowed {member} to join {channel.name} for the next 10 seconds`")
+        # todo:Themi This try statement is very gross, when msg is a success it falls under an except saying: 'bool' object is not callable. Although is dosen't cause any problems this looks and feels gross
+        try:
+            msg = await self.bot.wait_for('voice_state_update', check=in_channel(member, channel), timeout=10)
+            await channel.set_permissions(member, overwrite=None)
+        except asyncio.TimeoutError:
+            await channel.set_permissions(member, overwrite=None)
+        except Exception as e:
+            print(f"except: {e}")
+            await channel.set_permissions(member, overwrite=None)
+        else:
+            pass
 
 
 def setup(bot):
