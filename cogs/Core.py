@@ -2,6 +2,7 @@ from discord.ext import commands
 from utils.options import check_current, check_options, set_current
 from utils.makeReadable import array_to_readable
 from utils.checks import is_owner
+import discord
 
 
 class Core(commands.Cog):
@@ -36,6 +37,13 @@ class Core(commands.Cog):
                 await ctx.send(f"available options: `{array_to_readable(check_options(option))}`")
         else:
             await ctx.send(f"available options: `{array_to_readable(check_options())}`")
+
+    @commands.command()
+    @is_owner()
+    async def set_game(self, ctx, game):
+        """Sets game bot is playing"""
+        await self.bot.change_presence(activity=discord.Game(name=game))
+        await ctx.send(f"Changed game playing to {game}")
 
 
 def setup(bot):
