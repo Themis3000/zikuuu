@@ -6,7 +6,7 @@ import requests
 # dadjokes = PersistentArray("jokes", "dadabase.txt")
 
 
-class Jokes:
+class Jokes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

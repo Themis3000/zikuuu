@@ -4,7 +4,7 @@ import asyncio
 from utils.checks import in_channel
 
 
-class Allow:
+class Allow(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

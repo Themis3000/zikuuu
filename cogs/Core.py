@@ -4,7 +4,7 @@ from utils.makeReadable import array_to_readable
 from utils.checks import is_owner
 
 
-class Core:
+class Core(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
