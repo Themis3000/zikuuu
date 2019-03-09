@@ -4,6 +4,8 @@ from utils.makeReadable import array_to_readable
 from utils.checks import is_owner
 import discord
 
+status_options = ["online", "idle", "offline", "dnd"]
+
 
 class Core(commands.Cog):
     def __init__(self, bot):
@@ -44,6 +46,16 @@ class Core(commands.Cog):
         """Sets game bot is playing"""
         await self.bot.change_presence(activity=discord.Game(name=game))
         await ctx.send(f"Changed game playing to {game}")
+
+    @commands.command()
+    @is_owner()
+    async def set_status(self, ctx, status):
+        """Sets bot online status"""
+        if status in status_options:
+            await self.bot.change_presence(status=discord.Status(status))
+            await ctx.send(f"Changed status to {status}")
+        else:
+            await ctx.send(f"not a valid status, valid status options are: {array_to_readable(status_options)}")
 
 
 def setup(bot):
