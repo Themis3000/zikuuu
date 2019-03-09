@@ -12,8 +12,8 @@ class Jokes(commands.Cog):
 
     @commands.command()
     async def dadjoke(self, ctx):
-        """Get a dad joke from the dada-base"""
-        await ctx.send(f"`{requests.get(url='https://icanhazdadjoke.com/', headers={'User-Agent': 'zikuuu discord bot', 'Accept': 'text/plain'}).text}`")
+        """Get a dad joke from the dada-base (aka icanhazdadjoke.com)"""
+        await ctx.send(f"{requests.get(url='https://icanhazdadjoke.com/', headers={'User-Agent': 'zikuuu discord bot', 'Accept': 'text/plain'}).text}")
         # await ctx.send(random.choice(dadjokes.array))
 
 
