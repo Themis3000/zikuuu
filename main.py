@@ -1,69 +1,51 @@
+from utils.options import Options
+import os
 import discord
 from discord.ext import commands
-from vars import TOKEN
-from rawReceiveHandler import to_object
-from emojiHandler import emoji_change
-from dataHandler import add_buttons, get_button
+
+# todo:Themi figure out a better help format method, send help to users dm.
+
+options = Options()
+client = commands.Bot(command_prefix='+', status=discord.Status(options.check_current("status_booting")), activity=discord.Game(name=options.check_current("game_booting")))
 
 
-client = commands.Bot(command_prefix='+')
+for file in os.listdir("cogs"):
+    if file.endswith(".py"):
+        name = file[:-3]
+        client.load_extension(f"cogs.{name}")
 
 
 @client.event
 async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
+    print("Ready to rumble")
+    await client.change_presence(status=discord.Status(options.check_current("status")), activity=discord.Game(name=options.check_current("game")))
+
+# todo:Themi Move all of this to a new file
+# todo:Themi fix this absolute mess of code
 
 
 @client.event
-async def on_message(message):
-    arguments = message.content.split(" ")
-    if message.content.startswith('+ping'):
-        await client.send_message(message.channel, 'Pong!')
-
-    if message.content.startswith('+buttonarray'):
-        if message.author.server_permissions.administrator:
-            array = message.content[13:].split(', ')
-            if len(array) % 2 == 0:
-                await client.send_message(message.channel, 'The next message you send will have the functioning buttons')
-                msg = await client.wait_for_message(author=message.author)
-                buttons = [[], []]
-                add_react = []
-                for i in range(int(len(array) / 2)):
-                    # emoji
-                    buttons[0].append(array[i * 2])
-                    if "<:" in buttons[0][len(buttons[0]) - 1]:
-                        add_react.append(buttons[0][len(buttons[0]) - 1][2:][:-1])
-                        buttons[0][len(buttons[0]) - 1] = buttons[0][len(buttons[0]) - 1][2:].split(":")[0]
-                    else:
-                        add_react.append(array[i * 2])
-                    # role
-                    buttons[1].append(array[i * 2 + 1])
-                print(add_react)
-                for i in add_react:
-                    await client.add_reaction(msg, i)
-                add_buttons(msg.id, buttons)
-            else:
-                await client.send_message(message.channel, 'Incorrect amount of parameters')
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send("You don't have the required perms to use that command")
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await send_cmd_help(ctx)
+    elif isinstance(error, commands.BadArgument):
+        await send_cmd_help(ctx)
 
 
-@client.event
-async def on_socket_raw_receive(msg):
-    try:
-        data = to_object(msg)
-        msg_type = data.t
-    except:
-        pass
+async def send_cmd_help(ctx):
+    if ctx.invoked_subcommand:
+        pages = await client.formatter.format_help_for(ctx, ctx.invoked_subcommand)
+        await ctx.send("Missing an argument, use: `" + pages[0].split("\n")[1] + "`")
     else:
-        if msg_type == 'MESSAGE_REACTION_ADD' or data.t == 'MESSAGE_REACTION_REMOVE':
-            if emoji_change(data):
-                role = get_button(data.d.message_id, data.d.emoji.name)
-                if msg_type == 'MESSAGE_REACTION_ADD':
-                    await client.add_roles(client.get_server(data.d.guild_id).get_member(data.d.user_id), discord.utils.get(client.get_server(data.d.guild_id).roles, name=role))
-                if msg_type == 'MESSAGE_REACTION_REMOVE':
-                    await client.remove_roles(client.get_server(data.d.guild_id).get_member(data.d.user_id), discord.utils.get(client.get_server(data.d.guild_id).roles, name=role))
+        pages = await client.formatter.format_help_for(ctx, ctx.command)
+        await ctx.send("Incorrect argument type, use: `" + pages[0].split("\n")[1] + "`")
 
 
-client.run(TOKEN)
+client.run(os.environ["TOKEN"])
+
+# non urgent to do starts here
+
+# todo:Themi allow repo manager to reload cogs
+# todo:Themi make a chat log system better then audit log
