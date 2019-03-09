@@ -9,7 +9,7 @@ class Allow(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    @commands.has_role("Mod")
+    @commands.has_role("Admins")
     async def allow(self, ctx, member: discord.Member):
         """Allow someone to join the voice channel you are in one time only"""
         channel = ctx.author.voice.channel

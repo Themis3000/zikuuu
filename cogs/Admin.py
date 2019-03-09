@@ -6,7 +6,7 @@ class Admin(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    @commands.has_role("Mod")
+    @commands.has_role("Admins")
     async def delete(self, ctx, amount: int):
         """bulk deletes messages"""
         await ctx.channel.purge(limit=amount)
