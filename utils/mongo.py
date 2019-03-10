@@ -1,5 +1,6 @@
 import pymongo
 import os
+import time
 
 client = pymongo.MongoClient(f"mongodb+srv://{os.environ['MONGO_USER']}:{os.environ['MONGO_PASS']}@{os.environ['MONGO_SERVER']}")
 
@@ -12,7 +13,7 @@ def get_user(id):
     if user:
         return user
     else:
-        user = {"_id": id, "coinz": 0}
+        user = {"_id": id, "coinz": 0, "last_faucet": 0}
         discorduserdata.insert_one(user)
         return user
 
@@ -23,9 +24,20 @@ def get_coinz(id):
 
 def change_coinz(id, amount):
     user = get_user(id)
-    discorduserdata.update_one(user, {"$set": {"coinz": user["coinz"] + amount}})
+    new_value = user["coinz"] + amount
+    discorduserdata.update_one(user, {"$set": {"coinz": new_value}})
+    return new_value
 
 
 def set_coinz(id, amount):
     user = get_user(id)
     discorduserdata.update_one(user, {"$set": {"coinz": amount}})
+
+# todo:Themi make it is last faucet var is stored as full seconds without a decemal
+
+
+def faucet(id, amount, cooldown):
+    user = get_user(id)
+    if user["last_faucet"] + cooldown < time.time():
+        discorduserdata.update_one(user, {"$set": {"last_faucet": time.time()}})
+        return change_coinz(id, amount)
