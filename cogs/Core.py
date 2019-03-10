@@ -14,6 +14,7 @@ class Core(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         """Pong!"""
+        print(ctx.author.id)
         await ctx.send(f"Pong! I am {str(self.bot.latency*1000)[:4]}ms latent to discord servers")
 
     @commands.command()

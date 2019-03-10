@@ -2,13 +2,10 @@ from utils.options import check_current
 import os
 import discord
 from discord.ext import commands
-from utils.mongo import mongo_test
 
 # todo:Themi figure out a better help format method, send help to users dm.
 
 client = commands.Bot(command_prefix=check_current("prefix"), status=discord.Status(check_current("status_booting")), activity=discord.Game(name=check_current("game_booting")))
-
-mongo_test()
 
 for file in os.listdir("cogs"):
     if file.endswith(".py"):
