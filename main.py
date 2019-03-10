@@ -1,12 +1,13 @@
-from utils.options import check_current, check_options, set_current
+from utils.options import check_current
 import os
 import discord
 from discord.ext import commands
 
 # todo:Themi figure out a better help format method, send help to users dm.
 
-client = commands.Bot(command_prefix=check_current("prefix"), status=discord.Status(check_current("status_booting")), activity=discord.Game(name=check_current("game_booting")))
+# todo:Themi Remove underscores from commands, its too gangster for the common user
 
+client = commands.Bot(command_prefix=check_current("prefix"), status=discord.Status(check_current("status_booting")), activity=discord.Game(name=check_current("game_booting")))
 
 for file in os.listdir("cogs"):
     if file.endswith(".py"):
