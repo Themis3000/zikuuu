@@ -6,6 +6,7 @@ client = pymongo.MongoClient(f"mongodb+srv://{os.environ['MONGO_USER']}:{os.envi
 
 userdata = client["userdata"]
 discorduserdata = userdata["discorduserdata"]
+discordguilddata = userdata["discordguilddata"]
 
 
 def get_user(id):
@@ -33,8 +34,6 @@ def set_coinz(id, amount):
     user = get_user(id)
     discorduserdata.update_one(user, {"$set": {"coinz": amount}})
 
-# todo:Themi make it is last faucet var is stored as full seconds without a decemal
-
 
 def faucet(id, amount, cooldown):
     user = get_user(id)
@@ -44,3 +43,22 @@ def faucet(id, amount, cooldown):
         return [True, new_balence]
     else:
         return [False, user["last_faucet"] + cooldown - int(str(time.time()).split(".")[0])]
+
+
+def get_guild(id):
+    guild = discordguilddata.findone(id)
+    if guild:
+        return guild
+    else:
+        guild = {"_id": id, "admin_roles": ["Admins", "Mod"], "reward_roles": {}, "cross_guild_coinz": True}
+        discordguilddata.insert_one(guild)
+        return guild
+
+
+def set_guild_settings(id, setting_dict):
+    guild = get_guild(id)
+    discorduserdata.update_one(guild, {"$set": setting_dict})
+
+
+def change_guild_admins_list(id, role, boolean):
+    pass
