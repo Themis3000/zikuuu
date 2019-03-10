@@ -11,7 +11,7 @@ class Allow(commands.Cog):
     @commands.command()
     @commands.has_role("Admins")
     async def allow(self, ctx, member: discord.Member):
-        """Allow someone to join the voice channel you are in one time only"""
+        """Allow someone to join the voice channel you are in one time only (must have role "Admins")"""
         channel = ctx.author.voice.channel
         if ctx.author.voice:
             await channel.set_permissions(member, connect=True, speak=True)
