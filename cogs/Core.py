@@ -1,6 +1,6 @@
 from discord.ext import commands
 from utils.options import check_current, check_options, set_current
-from utils.makeReadable import array_to_readable
+from utils.makeReadable import array_to_comma_list
 from utils.checks import is_owner
 import discord
 
@@ -14,7 +14,6 @@ class Core(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         """Pong!"""
-        print(ctx.author.id)
         await ctx.send(f"Pong! I am {str(self.bot.latency*1000)[:4]}ms latent to discord servers")
 
     @commands.command()
@@ -33,13 +32,13 @@ class Core(commands.Cog):
                         set_current(option, new_value)
                         await ctx.send(f"successfully set `{option}` to `{new_value}`")
                     else:
-                        await ctx.send(f"available options: `{array_to_readable(check_options(option))}`")
+                        await ctx.send(f"available options: `{array_to_comma_list(check_options(option))}`")
                 else:
-                    await ctx.send(f"I don't see that option, available options: `{array_to_readable(check_options(option))}`")
+                    await ctx.send(f"I don't see that option, available options: `{array_to_comma_list(check_options(option))}`")
             else:
-                await ctx.send(f"available options: `{array_to_readable(check_options(option))}`")
+                await ctx.send(f"available options: `{array_to_comma_list(check_options(option))}`")
         else:
-            await ctx.send(f"available options: `{array_to_readable(check_options())}`")
+            await ctx.send(f"available options: `{array_to_comma_list(check_options())}`")
 
     @commands.command()
     @is_owner()
@@ -56,7 +55,7 @@ class Core(commands.Cog):
             await self.bot.change_presence(status=discord.Status(status))
             await ctx.send(f"Changed status to {status}")
         else:
-            await ctx.send(f"not a valid status, valid status options are: {array_to_readable(status_options)}")
+            await ctx.send(f"not a valid status, valid status options are: {array_to_comma_list(status_options)}")
 
 
 def setup(bot):

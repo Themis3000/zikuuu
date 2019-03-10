@@ -39,5 +39,8 @@ def set_coinz(id, amount):
 def faucet(id, amount, cooldown):
     user = get_user(id)
     if user["last_faucet"] + cooldown < time.time():
-        discorduserdata.update_one(user, {"$set": {"last_faucet": time.time()}})
-        return change_coinz(id, amount)
+        new_balence = user["coinz"] + amount
+        discorduserdata.update_one(user, {"$set": {"last_faucet": int(str(time.time()).split(".")[0]), "coinz": new_balence}})
+        return [True, new_balence]
+    else:
+        return [False, user["last_faucet"] + cooldown - int(str(time.time()).split(".")[0])]
