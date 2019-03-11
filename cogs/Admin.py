@@ -9,7 +9,7 @@ class Admin(commands.Cog):
     @commands.has_role("Admins")
     async def delete(self, ctx, amount: int):
         """bulk deletes messages"""
-        await ctx.channel.purge(limit=amount)
+        await ctx.channel.purge(limit=amount+1)
 
 
 def setup(bot):
