@@ -1,6 +1,6 @@
 from discord.ext import commands
 from utils.options import check_current, check_options, set_current
-from utils.makeReadable import array_to_comma_list
+from utils.makeReadable import array_to_comma_list, array_to_space_list
 from utils.checks import is_owner
 import discord
 
@@ -44,6 +44,9 @@ class Core(commands.Cog):
     @is_owner()
     async def set_game(self, ctx, game):
         """Sets game bot is playing"""
+        game = ctx.message.content.split(" ")
+        game.pop(0)
+        game = array_to_space_list(game)
         await self.bot.change_presence(activity=discord.Game(name=game))
         await ctx.send(f"Changed game playing to {game}")
 
