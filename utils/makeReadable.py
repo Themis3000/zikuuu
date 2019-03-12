@@ -1,5 +1,6 @@
 import datetime
 
+
 def array_to_comma_list(array):
     string = ""
     for i in range(len(array)-1):
