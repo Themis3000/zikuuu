@@ -21,7 +21,7 @@ class Currency(commands.Cog):
         """Claim some of that mulah"""
         coinz = faucet(ctx.author.id, 30, 25200)
         if coinz[0]:
-            await ctx.send(f"You have claimed 10 coinz, you now have {coinz[1]} coinz")
+            await ctx.send(f"You have claimed 30 coinz, you now have {coinz[1]} coinz")
         else:
             await ctx.send(f"Hold on there partner, you still got some wait'n. {seconds_to_readable(coinz[1])} to go")
 
