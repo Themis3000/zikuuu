@@ -1,9 +1,11 @@
 from discord.ext import commands
-from utils.mongo import get_user, get_coinz, change_coinz, set_coinz, faucet, set_user_from_dict
+from utils.mongo import get_user, get_coinz, change_coinz, set_coinz, faucet, new_pet
 import random
 from utils.makeReadable import array_to_space_list, seconds_to_readable
+from utils.options import check_current
+import asyncio
 
-pets = ["cat", ":mouse:", ":dog:", ":pig:", ":fox:", ":cow:", ":chicken:"]
+pets = ["\N{cat}", "\N{mouse}", "\N{dog}", "\N{pig}", "\N{cow}", "\N{chicken}"]
 emojis = [":bell:", ":lemon:", ":watermelon:", ":chocolate_bar:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
 win_amounts = {":bell:": 8, ":lemon:": 4, ":watermelon:": 6, ":chocolate_bar:": 18, ":eggplant:": 10, ":tangerine:": 6}
 
@@ -71,13 +73,39 @@ class Currency(commands.Cog):
     async def buypet(self, ctx):
         cost = 20
         user = get_user(ctx.author.id)
+
         if user["coinz"] >= cost:
+            message = await ctx.send("Choose your pet emoji")
+            for emoji in pets:
+                await message.add_reaction(emoji)
+
+            def check_pet(reaction, user):
+                return user == ctx.author and reaction.emoji in pets
+
             try:
-                for emoji in pets:
-                    print(emoji)
-                    await ctx.message.add_reaction(f"\N{emoji}")
-            except Exception as error:
-                print(error)
+                reaction, sender = await self.bot.wait_for('reaction_add', timeout=120, check=check_pet)
+            except asyncio.TimeoutError:
+                await ctx.send("You took too long...")
+            else:
+                await ctx.send(f"you chose {reaction}! What do you want to name your pet? Use {check_current('prefix')}name (name).")
+
+                def check_name(m):
+                    return m.author == ctx.author and m.content.split(" ")[0] == f"{check_current('prefix')}name"
+
+                try:
+                    name_msg = await self.bot.wait_for("message", timeout=120, check=check_name)
+                except asyncio.TimeoutError:
+                    await ctx.send("You took too long...")
+                else:
+                    name_array = name_msg.content.split(" ")
+                    name_array.pop(0)
+                    name = array_to_space_list(name_array)
+                    new_pet(user, name, reaction.emoji, cost)
+                    await ctx.send(f"Have fun with your new buddy {name}!")
+
+    @commands.command()
+    async def battle(self, ctx, challenged, amount):
+        pass
 
 
 def setup(bot):

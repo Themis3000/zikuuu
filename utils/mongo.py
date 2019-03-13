@@ -18,8 +18,8 @@ def get_user(id):
         return user
 
 
-def set_user_from_dict(dict, new_values_dict):
-    discorduserdata.update_one(dict, {"$set": {new_values_dict}})
+def new_pet(user, name, emote, cost):
+    discorduserdata.update_one(user, {"$set": {"coinz": user["coinz"]-cost, "pet": {"name": name, "emote": emote, "win": 0, "loss": 0}}})
 
 
 def get_coinz(id):
