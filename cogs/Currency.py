@@ -1,8 +1,9 @@
 from discord.ext import commands
-from utils.mongo import get_user, get_coinz, change_coinz, set_coinz, faucet
+from utils.mongo import get_user, get_coinz, change_coinz, set_coinz, faucet, set_user_from_dict
 import random
 from utils.makeReadable import array_to_space_list, seconds_to_readable
 
+pets = ["cat", ":mouse:", ":dog:", ":pig:", ":fox:", ":cow:", ":chicken:"]
 emojis = [":bell:", ":lemon:", ":watermelon:", ":chocolate_bar:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
 win_amounts = {":bell:": 8, ":lemon:": 4, ":watermelon:": 6, ":chocolate_bar:": 18, ":eggplant:": 10, ":tangerine:": 6}
 
@@ -65,6 +66,18 @@ class Currency(commands.Cog):
             message = message + "\n" + emoji + ": " + str(amount) + "x spin cost"
         message = message + "\n:cherries:: 3 credits"
         await ctx.send(message)
+
+    @commands.command()
+    async def buypet(self, ctx):
+        cost = 20
+        user = get_user(ctx.author.id)
+        if user["coinz"] >= cost:
+            try:
+                for emoji in pets:
+                    print(emoji)
+                    await ctx.message.add_reaction(f"\N{emoji}")
+            except Exception as error:
+                print(error)
 
 
 def setup(bot):
