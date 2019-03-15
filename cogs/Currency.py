@@ -89,7 +89,7 @@ class Currency(commands.Cog):
             except asyncio.TimeoutError:
                 await ctx.send("You took too long...")
             else:
-                await ctx.send(f"you chose {reaction}! What do you want to name your pet? Use {check_current('prefix')}name (name).")
+                await ctx.send(f"you chose {reaction}! What do you want to name your pet? Use {check_current('prefix')}name (name). (Note: buying a new pet will get rid of your old pet)")
 
                 def check_name(m):
                     return m.author == ctx.author and m.content.split(" ")[0] == f"{check_current('prefix')}name"
@@ -102,11 +102,11 @@ class Currency(commands.Cog):
                     name_array = name_msg.content.split(" ")
                     name_array.pop(0)
                     name = array_to_space_list(name_array)
-                    if len(name) < 30:
+                    if len(name) < 20:
                         new_pet(user, name, reaction.emoji, cost)
                         await ctx.send(f"Have fun with your new buddy {name}!")
                     else:
-                        await ctx.send("You cannot have your name be over 30 characters")
+                        await ctx.send("You cannot have your name be over 20 characters")
 
     @commands.command()
     async def battle(self, ctx, defending: discord.Member, amount: int):
@@ -147,6 +147,7 @@ class Currency(commands.Cog):
                                         while game_playing:
                                             if user_hp > 0:
                                                 if defending_hp > 0:
+                                                    block_string = ""
                                                     # logic for attacking users move
                                                     if max_hp > user_hp:
                                                         attack_rand_int = random.randint(1, 10)
@@ -174,7 +175,7 @@ class Currency(commands.Cog):
                                                         else:
                                                             defending_hp = defending_hp + 1
                                                     elif attack_move == "attack" and defend_move == "block":
-                                                        pass
+                                                        block_string = "Blocked!"
                                                     else:
                                                         if user_turn:
                                                             defending_hp = defending_hp - 1
@@ -196,7 +197,7 @@ class Currency(commands.Cog):
                                                     turncount = turncount + 1
                                                     user_hearts = ((user_hp//2) * ":heart:") + ((user_hp % 2) * ":broken_heart:") + (((max_hp-user_hp)//2) * ":black_heart:")
                                                     defending_hearts = ((defending_hp//2) * ":heart:") + ((defending_hp % 2) * ":broken_heart:") + (((max_hp-defending_hp)//2) * ":black_heart:")
-                                                    await game_message.edit(content=f"{user_emote} {user_pointer}\n{user_hearts}{user['pet']['name']}\nturn:{turncount}\n{defending_hearts}{defending_user['pet']['name']}\n{defending_emote} {defending_pointer}")
+                                                    await game_message.edit(content=f"{user_emote} {user_pointer}\n{user_hearts}{user['pet']['name']}\nturn:{turncount}       {block_string}\n{defending_hearts}{defending_user['pet']['name']}\n{defending_emote} {defending_pointer}")
                                                     await asyncio.sleep(1)
                                                 else:
                                                     battle_results(ctx.author.id, defending.id, amount)
@@ -220,6 +221,14 @@ class Currency(commands.Cog):
                 await ctx.send(f"You need to bet at least {min} coinz")
         else:
             await ctx.send("You cannot battle yourself")
+
+    @commands.command()
+    async def stats(self, ctx):
+        user = get_user(ctx.author.id)
+        if user["pet"]:
+            await ctx.send(f"Your pet {user['pet']['name']}'s stats:\nWins: {user['pet']['win']}\nLosses: {user['pet']['loss']}")
+        else:
+            await ctx.send("You do not have a pet!")
 
 
 def setup(bot):
