@@ -22,6 +22,13 @@ def new_pet(user, name, emote, cost):
     discorduserdata.update_one(user, {"$set": {"coinz": user["coinz"]-cost, "pet": {"name": name, "emote": emote, "win": 0, "loss": 0}}})
 
 
+def battle_results(winning_id, losingid, bet_amount):
+    winner_user = get_user(winning_id)
+    loser_user = get_user(losingid)
+    discorduserdata.update_one(winner_user, {"$set": {"coinz": winner_user["coinz"]+(bet_amount*2), "pet.win": winner_user["pet"]["win"]+1}})
+    discorduserdata.update_one(loser_user, {"$set": {"pet.loss": loser_user["pet"]["loss"]+1}})
+
+
 def get_coinz(id):
     return get_user(id)["coinz"]
 
@@ -29,7 +36,7 @@ def get_coinz(id):
 def change_coinz(id, amount):
     user = get_user(id)
     new_value = user["coinz"] + amount
-    discorduserdata.update_one(user, {"$set": {"coinz": new_value}})
+    discorduserdata.update_many(user, {"$set": {"coinz": new_value}})
     return new_value
 
 
