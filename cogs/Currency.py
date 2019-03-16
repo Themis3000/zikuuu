@@ -121,102 +121,108 @@ class Currency(commands.Cog):
                             if defending_user["coinz"] >= amount:
                                 if [ctx.author.id, defending.id] not in sent_requests:
                                     sent_requests.append([ctx.author.id, defending.id])
-                                    await ctx.send(f"{defending.mention} has been challenged by {ctx.author.mention}. Accept by using {check_current('prefix')}accept {ctx.author.mention} (they have 60 seconds to respond)")
+                                    accept_message = await ctx.send(f"{defending.mention} has been challenged by {ctx.author.mention}. Accept by clicking the :white_check_mark: (they have 120 seconds to respond)")
+                                    await accept_message.add_reaction("✅")
+                                    await accept_message.add_reaction("❌")
 
-                                    def check(m):
-                                        args = m.content.split(" ")
-                                        return m.author == defending and args[0] == f"{check_current('prefix')}accept" and args[1] == ctx.author.mention
+                                    def check_accept(reaction, sender):
+                                        return sender == defending and reaction.emoji in ["✅", "❌"] or sender == ctx.author and reaction.emoji == "❌"
 
                                     try:
-                                        await self.bot.wait_for("message", timeout=60, check=check)
+                                        reaction, sender = await self.bot.wait_for('reaction_add', timeout=120, check=check_accept)
                                     except asyncio.TimeoutError:
-                                        await ctx.send(f"{defending.mention} took to long to respond.")
                                         sent_requests.remove([ctx.author.id, defending.id])
+                                        await accept_message.add_reaction("⏰")
+                                        await ctx.send(f"{defending.mention} took to long to respond.")
                                     else:
                                         sent_requests.remove([ctx.author.id, defending.id])
-                                        change_coinz(ctx.author.id, -1 * amount)
-                                        change_coinz(defending.id, -1 * amount)
-                                        # game loop
-                                        game_message = await ctx.send(f"starting...")
-                                        game_playing = True
-                                        user_hp = 10
-                                        defending_hp = 10
-                                        max_hp = 10
-                                        user_turn = True
-                                        turncount = 0
-                                        while game_playing:
-                                            if user_hp > 0:
-                                                if defending_hp > 0:
-                                                    block_string = ""
-                                                    # logic for attacking users move
-                                                    if max_hp > user_hp:
-                                                        attack_rand_int = random.randint(1, 10)
-                                                        if attack_rand_int >= 9:
-                                                            attack_move = "heal"
-                                                            attack_emote = ":sparkling_heart:"
+                                        if reaction.emoji == "❌":
+                                            await accept_message.add_reaction("🛑")
+                                            await ctx.send(f"Battle canceled by {sender.mention}")
+                                        else:
+                                            change_coinz(ctx.author.id, -1 * amount)
+                                            change_coinz(defending.id, -1 * amount)
+                                            # game loop
+                                            game_message = await ctx.send(f"starting...")
+                                            game_playing = True
+                                            user_hp = 10
+                                            defending_hp = 10
+                                            max_hp = 10
+                                            user_turn = True
+                                            turncount = 0
+                                            while game_playing:
+                                                if user_hp > 0:
+                                                    if defending_hp > 0:
+                                                        block_string = " "
+                                                        # logic for attacking users move
+                                                        if max_hp > user_hp:
+                                                            attack_rand_int = random.randint(1, 10)
+                                                            if attack_rand_int >= 9:
+                                                                attack_move = "heal"
+                                                                attack_emote = ":sparkling_heart:"
+                                                            else:
+                                                                attack_move = "attack"
+                                                                attack_emote = ":crossed_swords:"
                                                         else:
                                                             attack_move = "attack"
                                                             attack_emote = ":crossed_swords:"
-                                                    else:
-                                                        attack_move = "attack"
-                                                        attack_emote = ":crossed_swords:"
-                                                    # logic for defending users move
-                                                    defend_rand_int = random.randint(1, 10)
-                                                    if defend_rand_int >= 8:
-                                                        defend_move = "block"
-                                                        defending_emote = ":octagonal_sign:"
-                                                    else:
-                                                        defend_move = "nothing"
-                                                        defending_emote = ":zzz:"
-                                                    # logic for damage changes
-                                                    if attack_move == "heal":
-                                                        if user_turn:
-                                                            user_hp = user_hp + 1
+                                                        # logic for defending users move
+                                                        defend_rand_int = random.randint(1, 10)
+                                                        if defend_rand_int >= 8:
+                                                            defend_move = "block"
+                                                            defending_emote = ":octagonal_sign:"
                                                         else:
-                                                            defending_hp = defending_hp + 1
-                                                    elif attack_move == "attack" and defend_move == "block":
-                                                        block_string = "Blocked!"
-                                                    else:
-                                                        if user_turn:
-                                                            defending_hp = defending_hp - 1
+                                                            defend_move = "nothing"
+                                                            defending_emote = ":zzz:"
+                                                        # logic for damage changes
+                                                        if attack_move == "heal":
+                                                            if user_turn:
+                                                                user_hp = user_hp + 1
+                                                            else:
+                                                                defending_hp = defending_hp + 1
+                                                        elif attack_move == "attack" and defend_move == "block":
+                                                            block_string = "Blocked!"
                                                         else:
-                                                            user_hp = user_hp - 1
-                                                    # logic for setting name of turn and swapping turns
-                                                    if user_turn:
-                                                        user_emote = attack_emote
-                                                        defending_emote = defending_emote
-                                                        user_pointer = "<==="
-                                                        defending_pointer = ""
-                                                        user_turn = False
+                                                            if user_turn:
+                                                                defending_hp = defending_hp - 1
+                                                            else:
+                                                                user_hp = user_hp - 1
+                                                        # logic for setting name of turn and swapping turns
+                                                        if user_turn:
+                                                            user_emote = attack_emote
+                                                            defending_emote = defending_emote
+                                                            user_pointer = "<==="
+                                                            defending_pointer = ""
+                                                            user_turn = False
+                                                        else:
+                                                            user_emote = defending_emote
+                                                            defending_emote = attack_emote
+                                                            user_pointer = ""
+                                                            defending_pointer = "<==="
+                                                            user_turn = True
+                                                        turncount = turncount + 1
+                                                        user_hearts = ((user_hp//2) * ":heart:") + ((user_hp % 2) * ":broken_heart:") + (((max_hp-user_hp)//2) * ":black_heart:")
+                                                        defending_hearts = ((defending_hp//2) * ":heart:") + ((defending_hp % 2) * ":broken_heart:") + (((max_hp-defending_hp)//2) * ":black_heart:")
+                                                        await game_message.edit(content=f"{user_emote} {user_pointer}\n{user_hearts}{user['pet']['emote']}{user['pet']['name']}({ctx.author.mention})\nturn:{turncount}       {block_string}\n{defending_hearts}{defending_user['pet']['emote']}{defending_user['pet']['name']}({defending.mention})\n{defending_emote} {defending_pointer}")
+                                                        await asyncio.sleep(1)
                                                     else:
-                                                        user_emote = defending_emote
-                                                        defending_emote = attack_emote
-                                                        user_pointer = ""
-                                                        defending_pointer = "<==="
-                                                        user_turn = True
-                                                    turncount = turncount + 1
-                                                    user_hearts = ((user_hp//2) * ":heart:") + ((user_hp % 2) * ":broken_heart:") + (((max_hp-user_hp)//2) * ":black_heart:")
-                                                    defending_hearts = ((defending_hp//2) * ":heart:") + ((defending_hp % 2) * ":broken_heart:") + (((max_hp-defending_hp)//2) * ":black_heart:")
-                                                    await game_message.edit(content=f"{user_emote} {user_pointer}\n{user_hearts}{user['pet']['emote']}{user['pet']['name']}({ctx.author.mention})\nturn:{turncount}       {block_string}\n{defending_hearts}{defending_user['pet']['emote']}{defending_user['pet']['name']}({defending.mention})\n{defending_emote} {defending_pointer}")
-                                                    await asyncio.sleep(1)
+                                                        battle_results(ctx.author.id, defending.id, amount)
+                                                        await ctx.send(f"{ctx.author.mention} Has won the battle for {amount} coinz!")
+                                                        game_playing = False
                                                 else:
-                                                    battle_results(ctx.author.id, defending.id, amount)
-                                                    await ctx.send(f"{ctx.author.mention} Has won the battle for {amount} coinz!")
+                                                    battle_results(defending.id, ctx.author.id, amount)
+                                                    await ctx.send(f"{defending.mention} Has won the battle for {amount} coinz!")
                                                     game_playing = False
-                                            else:
-                                                battle_results(defending.id, ctx.author.id, amount)
-                                                await ctx.send(f"{defending.mention} Has won the battle for {amount} coinz!")
-                                                game_playing = False
                                 else:
                                     await ctx.send(f"You can only have one request out to a person at a time")
                             else:
-                                await ctx.send("The person you challenged does not have enough coinz")
+                                await ctx.send("The person you challenged does not have enough coinz, use +pet to buy one")
                         else:
                             await ctx.send("You do not have enough coinz")
                     else:
                         await ctx.send("The person who you challenged does not have a pet")
                 else:
-                    await ctx.send("You need a pet to play")
+                    await ctx.send("You need a pet to play, use +pet to buy one")
             else:
                 await ctx.send(f"You need to bet at least {min} coinz")
         else:
