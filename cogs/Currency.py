@@ -7,9 +7,9 @@ import asyncio
 import discord
 
 sent_requests = []
-pets = ["\N{cat}", "\N{mouse}", "\N{dog}", "\N{pig}", "\N{cow}", "\N{chicken}"]
-emojis = [":bell:", ":lemon:", ":watermelon:", ":gem:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
-win_amounts = {":bell:": 8, ":lemon:": 4, ":watermelon:": 6, ":gem:": 18, ":eggplant:": 10, ":tangerine:": 6}
+pets = ["🐱", "🐭", "🐶", "🐷", "🐮", "🐔", "🦁"]
+emojis = [":bell:", ":watermelon:", ":gem:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
+win_amounts = {":bell:": 8, ":watermelon:": 6, ":gem:": 18, ":eggplant:": 10, ":tangerine:": 6}
 
 
 class Currency(commands.Cog):
@@ -77,7 +77,7 @@ class Currency(commands.Cog):
         user = get_user(ctx.author.id)
 
         if user["coinz"] >= cost:
-            message = await ctx.send("Choose your pet emoji")
+            message = await ctx.send(f"Choose your pet emoji (Buying a pet costs {cost} coinz)")
             for emoji in pets:
                 await message.add_reaction(emoji)
 
@@ -89,7 +89,7 @@ class Currency(commands.Cog):
             except asyncio.TimeoutError:
                 await ctx.send("You took too long...")
             else:
-                await ctx.send(f"you chose {reaction}! What do you want to name your pet? Use {check_current('prefix')}name (name). (Note: buying a new pet will get rid of your old pet)")
+                await ctx.send(f"You chose {reaction}! What do you want to name your pet? Use {check_current('prefix')}name (name). (Note: buying a new pet will get rid of your old pet)")
 
                 def check_name(m):
                     return m.author == ctx.author and m.content.split(" ")[0] == f"{check_current('prefix')}name"
@@ -121,14 +121,14 @@ class Currency(commands.Cog):
                             if defending_user["coinz"] >= amount:
                                 if [ctx.author.id, defending.id] not in sent_requests:
                                     sent_requests.append([ctx.author.id, defending.id])
-                                    await ctx.send(f"{defending.mention} has been challenged by {ctx.author.mention}. Accept by using {check_current('prefix')}accept {ctx.author.mention}")
+                                    await ctx.send(f"{defending.mention} has been challenged by {ctx.author.mention}. Accept by using {check_current('prefix')}accept {ctx.author.mention} (they have 60 seconds to respond)")
 
                                     def check(m):
                                         args = m.content.split(" ")
                                         return m.author == defending and args[0] == f"{check_current('prefix')}accept" and args[1] == ctx.author.mention
 
                                     try:
-                                        message = await self.bot.wait_for("message", timeout=60, check=check)
+                                        await self.bot.wait_for("message", timeout=60, check=check)
                                     except asyncio.TimeoutError:
                                         await ctx.send(f"{defending.mention} took to long to respond.")
                                         sent_requests.remove([ctx.author.id, defending.id])
@@ -197,7 +197,7 @@ class Currency(commands.Cog):
                                                     turncount = turncount + 1
                                                     user_hearts = ((user_hp//2) * ":heart:") + ((user_hp % 2) * ":broken_heart:") + (((max_hp-user_hp)//2) * ":black_heart:")
                                                     defending_hearts = ((defending_hp//2) * ":heart:") + ((defending_hp % 2) * ":broken_heart:") + (((max_hp-defending_hp)//2) * ":black_heart:")
-                                                    await game_message.edit(content=f"{user_emote} {user_pointer}\n{user_hearts}{user['pet']['name']}\nturn:{turncount}       {block_string}\n{defending_hearts}{defending_user['pet']['name']}\n{defending_emote} {defending_pointer}")
+                                                    await game_message.edit(content=f"{user_emote} {user_pointer}\n{user_hearts}{user['pet']['emote']}{user['pet']['name']}({ctx.author.mention})\nturn:{turncount}       {block_string}\n{defending_hearts}{defending_user['pet']['emote']}{defending_user['pet']['name']}({defending.mention})\n{defending_emote} {defending_pointer}")
                                                     await asyncio.sleep(1)
                                                 else:
                                                     battle_results(ctx.author.id, defending.id, amount)
