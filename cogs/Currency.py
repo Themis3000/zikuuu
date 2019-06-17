@@ -124,7 +124,7 @@ class Currency(commands.Cog):
                             if defending_user["coinz"] >= amount:
                                 if [ctx.author.id, defending.id] not in sent_requests:
                                     sent_requests.append([ctx.author.id, defending.id])
-                                    accept_message = await ctx.send(f"{defending.mention} has been challenged by {ctx.author.mention}. Accept by clicking the :white_check_mark: (they have 120 seconds to respond)")
+                                    accept_message = await ctx.send(f"{defending.mention} has been challenged by {ctx.author.mention} for {amount} coinz. Accept by clicking the :white_check_mark: (they have 120 seconds to respond)")
                                     await accept_message.add_reaction("✅")
                                     await accept_message.add_reaction("❌")
 
