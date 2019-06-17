@@ -7,6 +7,7 @@ import asyncio
 import discord
 
 sent_requests = []
+sent_tictactoe = []
 pets = ["🐱", "🐭", "🐶", "🐷", "🐮", "🐔", "🦁"]
 emojis = [":bell:", ":watermelon:", ":gem:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
 win_amounts = {":bell:": 8, ":watermelon:": 6, ":gem:": 18, ":eggplant:": 10, ":tangerine:": 6}
@@ -110,6 +111,7 @@ class Currency(commands.Cog):
 
     @commands.command()
     async def battle(self, ctx, defending: discord.Member, amount: int):
+        """Heck someone up and take their coinz gang gang style"""
         if not ctx.author == defending:
             user = get_user(ctx.author.id)
             defending_user = get_user(defending.id)
@@ -230,11 +232,119 @@ class Currency(commands.Cog):
 
     @commands.command()
     async def stats(self, ctx):
+        """Show off your superiority"""
         user = get_user(ctx.author.id)
         if user["pet"]:
             await ctx.send(f"Your pet {user['pet']['name']}'s stats:\nWins: {user['pet']['win']}\nLosses: {user['pet']['loss']}")
         else:
             await ctx.send("You do not have a pet!")
+
+    @commands.command()
+    async def tictactoe(self, ctx, defending: discord.Member, amount: int):
+        user = get_user(ctx.author.id)
+        defending_user = get_user(defending.id)
+        min=5
+        if not defending == ctx.author:
+            if amount >= min:
+                if user["coinz"] >= amount:
+                    if defending_user["coinz"] >= amount:
+                        if [ctx.author.id, defending.id] not in sent_requests:
+                            sent_tictactoe.append([ctx.author.id, defending.id])
+                            accept_message = await ctx.send(f"{defending.mention} has been challenged by {ctx.author.mention}. Accept by clicking the :white_check_mark: (they have 120 seconds to respond)")
+                            await accept_message.add_reaction("✅")
+                            await accept_message.add_reaction("❌")
+
+                            # todo:Themi Fix so that is checks for a check in the request message, not any message. Check battle for this bug as well
+                            def check_accept(reaction, sender):
+                                return sender == defending and reaction.emoji in ["✅",
+                                                                                  "❌"] or sender == ctx.author and reaction.emoji == "❌"
+
+                            try:
+                                reaction, sender = await self.bot.wait_for('reaction_add', timeout=120, check=check_accept)
+                            except asyncio.TimeoutError:
+                                sent_tictactoe.remove([ctx.author.id, defending.id])
+                                await accept_message.add_reaction("⏰")
+                                await ctx.send(f"{defending.mention} took to long to respond.")
+                            else:
+                                sent_tictactoe.remove([ctx.author.id, defending.id])
+                                if reaction.emoji == "❌":
+                                    await accept_message.add_reaction("🛑")
+                                    await ctx.send(f"Battle canceled by {sender.mention}")
+                                else:
+                                    game_message = await ctx.send("Battle is starting...")
+                                    # change_coinz(ctx.author.id, -1 * amount)
+                                    # change_coinz(defending.id, -1 * amount)
+                                    # game loop
+                                    game_playing = True
+                                    game_state = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                    reactions = ["1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣"]
+                                    message = ["1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣"]
+                                    turn = ctx.author
+                                    symbol = ":x:"
+
+                                    def game_turn(reaction, sender):
+                                        if str(reaction) in reactions and sender == turn:
+                                            reactions.remove(str(reaction))
+                                            loc = message.index(str(reaction))
+                                            message[loc] = symbol
+                                            game_state[loc] = turn.id
+                                            return True
+                                        else:
+                                            return False
+
+                                    while game_playing:
+                                        # update game message
+                                        await game_message.edit(content=f"{ctx.author.mention}(:x:) vs {defending.mention}(:o:)\n"
+                                                          f"{message[0]} | {message[1]}| {message[2]}\n"
+                                                          f"-----|-----|-----\n"
+                                                          f"{message[3]} | {message[4]}| {message[5]}\n"
+                                                          f"-----|-----|-----\n"
+                                                          f"{message[6]} | {message[7]}| {message[8]}\n")
+                                        # put reactions
+                                        for reaction in reactions:
+                                            await game_message.add_reaction(reaction)
+                                        # wait for reaction
+                                        try:
+                                            reaction, sender = await self.bot.wait_for('reaction_add', timeout=120, check=game_turn)
+                                        except asyncio.TimeoutError:
+                                            await accept_message.add_reaction("⏰")
+                                            await ctx.send("Took to long to make a move")
+                                            game_playing = False
+                                        else:
+                                            # clear current reactions
+                                            await game_message.clear_reactions()
+                                            # check if all spots are taken
+                                            if len(reactions) == 0:
+                                                await ctx.send("Tie game")
+                                                break
+                                            # check if current turn has a winning state
+                                            print(game_state)
+                                            for i in range(0, 3):
+                                                print("start" + str(i))
+                                                print(i*3)
+                                                print(i*3+1)
+                                                print(i*3+2)
+                                                if game_state[i*3] == turn.id and game_state[i*3+1] == turn.id and game_state[i*3+2] == turn.id or game_state[i] == turn.id and game_state[i+3] == turn.id and game_state[i+6] == turn.id or game_state[1] == turn.id and game_state[5] == turn.id and game_state[9] == turn.id or game_state[3] == turn.id and game_state[5] == turn.id and game_state[7] == turn.id:
+                                                    await ctx.send(f"{turn.mention} has won!")
+                                                    break
+                                            # turn flip flop
+                                            if turn == ctx.author:
+                                                turn = defending
+                                                symbol = ":o:"
+                                            else:
+                                                turn = ctx.author
+                                                symbol = ":x:"
+
+                        else:
+                            await ctx.send(f"{ctx.author.mention} you already have a pending invite to that person")
+                    else:
+                        await ctx.send(f"{defending.mention} does not have enough coinz, they only have {defending_user['coinz']}")
+                else:
+                    await ctx.send(f"{ctx.author.mention} you do not have enough coinz, you only have {user['coinz']}")
+            else:
+                await ctx.send(f"{ctx.author.mention} you need to bet at least {min} coinz")
+        else:
+            await ctx.send("You cannot challenge yourself")
 
 
 def setup(bot):
