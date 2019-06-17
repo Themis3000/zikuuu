@@ -65,6 +65,7 @@ class Currency(commands.Cog):
 
     @commands.command()
     async def slotspayouts(self, ctx):
+        """Get tempted into playing slots"""
         message = "Payout amounts:\n"
         for emoji, amount in win_amounts.items():
             message = message + "\n" + emoji + ": " + str(amount) + "x spin cost"
@@ -73,6 +74,7 @@ class Currency(commands.Cog):
 
     @commands.command()
     async def buypet(self, ctx):
+        """Get yo self a pet for your travels"""
         cost = 20
         user = get_user(ctx.author.id)
 
@@ -110,6 +112,7 @@ class Currency(commands.Cog):
 
     @commands.command()
     async def battle(self, ctx, defending: discord.Member, amount: int):
+        """Heck someone up and take their coinz gang gang style"""
         if not ctx.author == defending:
             user = get_user(ctx.author.id)
             defending_user = get_user(defending.id)
@@ -230,6 +233,7 @@ class Currency(commands.Cog):
 
     @commands.command()
     async def stats(self, ctx):
+        """Show off your superiority"""
         user = get_user(ctx.author.id)
         if user["pet"]:
             await ctx.send(f"Your pet {user['pet']['name']}'s stats:\nWins: {user['pet']['win']}\nLosses: {user['pet']['loss']}")
