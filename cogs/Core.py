@@ -60,6 +60,11 @@ class Core(commands.Cog):
         else:
             await ctx.send(f"not a valid status, valid status options are: {array_to_comma_list(status_options)}")
 
+    @commands.command()
+    async def repo(self, ctx):
+        """View the git repo for this bot"""
+        await ctx.send(f"You can find the project repo at {check_current('repository')}")
+
 
 def setup(bot):
     bot.add_cog(Core(bot))
