@@ -8,8 +8,12 @@ import discord
 
 sent_requests = []
 pets = ["🐱", "🐭", "🐶", "🐷", "🐮", "🐔", "🦁"]
-emojis = [":bell:", ":watermelon:", ":gem:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
-win_amounts = {":bell:": 8, ":watermelon:": 6, ":gem:": 18, ":eggplant:": 10, ":tangerine:": 6}
+slots = {":cherries:": {"multiplier": 0, "chance": .01},
+         ":bell:": {"multiplier": 8, "chance": .40},
+         ":watermelon:": {"multiplier": 6, "chance": .01},
+         ":gem:": {"multiplier": 18, "chance": .01},
+         ":eggplant:": {"multiplier": 10, "chance": .01},
+         ":tangerine:": {"multiplier": 8, "chance": .01}}
 
 
 class Currency(commands.Cog):
@@ -34,43 +38,86 @@ class Currency(commands.Cog):
     @commands.command()
     async def slots(self, ctx, amount: int):
         """Lose your life savings in a game of slots!"""
-        coinz = get_coinz(ctx.author.id)
-        reel = []
-        if amount <= coinz:
-            if amount > 0:
-                for i in range(0, 3):
-                    reel.append(random.choice(emojis))
-                if ":poop:" in reel:
-                    change_coinz(ctx.author.id, -1 * amount)
-                    message = "poopy spin... no win :("
-                elif reel.count(":cherries:") > 0:
-                    win_amount = reel.count(":cherries:") * 4
-                    change_coinz(ctx.author.id, win_amount - amount)
-                    if win_amount > amount:
-                        message = f"Got {reel.count(':cherries:')} :cherries: and won {win_amount} coinz!"
-                    else:
-                        message = f"Got {reel.count(':cherries:')} :cherries: and won {win_amount} coinz, but spent {amount} on the spin"
-                elif reel[0] == reel[1] and reel[1] == reel[2]:
-                    win_amount = win_amounts[reel[0]] * amount
-                    change_coinz(ctx.author.id, win_amount - amount)
-                    message = f"Won {win_amount + amount} coinz!! Woo!"
+        if amount > 0:
+            coinz = get_coinz(ctx.author.id)
+            if amount <= coinz:
+                won = False
+                reel = []
+                cherries = 0
+                for emote in slots:
+                    if random.random() < slots[emote]["chance"]:
+                        for i in range(0, 3):
+                            reel[i] = emote
+                        win_amount = amount * slots[emote]["multiplier"]
+                        won = True
+                        break
+                print(reel)
+                if not won:
+                    emotes = list(slots.keys())
+                    first_draw = random.choice(emotes)
+                    reel.append(first_draw)
+                    emotes.remove(first_draw)
+                    for i in range(0, 2):
+                        reel.append(random.choice(emotes))
+                cherries = reel.count(":cherries:")
+                print(cherries)
+                win_amount = cherries * 3
+                if win_amount == 0:
+                    message = f"no good :(, lost {win_amount} coinz"
                 else:
-                    change_coinz(ctx.author.id, -1 * amount)
-                    message = f"no win :( lost {amount}"
+                    if cherries > 0:
+                        if win_amount >= amount:
+                            message = f"Got {cherries} cherries and won {coinz}!"
+                        else:
+                            message = f"Got {cherries} and won {coinz}, but spent {win_amount} on the spin :("
+                    else:
+                        message = f"Won {win_amount} coinz!"
+                change_coinz(ctx.author.id, (-1 * amount) + win_amount)
                 await ctx.send(array_to_space_list(reel) + "\n" + message)
             else:
-                await ctx.send("You must bet more then 0")
+                await ctx.send(f"You don't have enough coinz, you only have {coinz}")
         else:
-            await ctx.send(f"You need more coinz, you currently have {coinz} coinz")
+            await ctx.send("Amount must be more then 0")
+
+        # The old slots code
+        # coinz = get_coinz(ctx.author.id)
+        # reel = []
+        # if amount <= coinz:
+        #     if amount > 0:
+        #         for i in range(0, 3):
+        #             reel.append(random.choice(emojis))
+        #         if ":poop:" in reel:
+        #             change_coinz(ctx.author.id, -1 * amount)
+        #             message = "poopy spin... no win :("
+        #         elif reel.count(":cherries:") > 0:
+        #             win_amount = reel.count(":cherries:") * 4
+        #             change_coinz(ctx.author.id, win_amount - amount)
+        #             if win_amount > amount:
+        #                 message = f"Got {reel.count(':cherries:')} :cherries: and won {win_amount} coinz!"
+        #             else:
+        #                 message = f"Got {reel.count(':cherries:')} :cherries: and won {win_amount} coinz, but spent {amount} on the spin"
+        #         elif reel[0] == reel[1] and reel[1] == reel[2]:
+        #             win_amount = win_amounts[reel[0]] * amount
+        #             change_coinz(ctx.author.id, win_amount - amount)
+        #             message = f"Won {win_amount + amount} coinz!! Woo!"
+        #         else:
+        #             change_coinz(ctx.author.id, -1 * amount)
+        #             message = f"no win :( lost {amount}"
+        #         await ctx.send(array_to_space_list(reel) + "\n" + message)
+        #     else:
+        #         await ctx.send("You must bet more then 0")
+        # else:
+        #     await ctx.send(f"You need more coinz, you currently have {coinz} coinz")
 
     @commands.command()
     async def slotspayouts(self, ctx):
         """Get tempted into playing slots"""
-        message = "Payout amounts:\n"
-        for emoji, amount in win_amounts.items():
-            message = message + "\n" + emoji + ": " + str(amount) + "x spin cost"
-        message = message + "\n:cherries:: 3 credits"
-        await ctx.send(message)
+        pass
+        # message = "Payout amounts:\n"
+        # for emoji, amount in win_amounts.items():
+        #     message = message + "\n" + emoji + ": " + str(amount) + "x spin cost"
+        # message = message + "\n:cherries:: 3 credits"
+        # await ctx.send(message)
 
     @commands.command()
     async def buypet(self, ctx):
@@ -219,11 +266,11 @@ class Currency(commands.Cog):
                                 else:
                                     await ctx.send(f"You can only have one request out to a person at a time")
                             else:
-                                await ctx.send("The person you challenged does not have enough coinz, use +pet to buy one")
+                                await ctx.send("The person you challenged does not have enough coinz")
                         else:
                             await ctx.send("You do not have enough coinz")
                     else:
-                        await ctx.send("The person who you challenged does not have a pet")
+                        await ctx.send("The person who you challenged does not have a pet, use +pet to buy one")
                 else:
                     await ctx.send("You need a pet to play, use +pet to buy one")
             else:
