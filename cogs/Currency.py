@@ -219,11 +219,11 @@ class Currency(commands.Cog):
                                 else:
                                     await ctx.send(f"You can only have one request out to a person at a time")
                             else:
-                                await ctx.send("The person you challenged does not have enough coinz, use +pet to buy one")
+                                await ctx.send("The person you challenged does not have enough coinz")
                         else:
                             await ctx.send("You do not have enough coinz")
                     else:
-                        await ctx.send("The person who you challenged does not have a pet")
+                        await ctx.send("The person who you challenged does not have a pet, use +pet to buy one")
                 else:
                     await ctx.send("You need a pet to play, use +pet to buy one")
             else:
