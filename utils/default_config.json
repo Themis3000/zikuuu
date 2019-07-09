@@ -76,5 +76,15 @@
             "ANY"
          ]
       }
+   ],
+   "repository": [
+      {
+         "current": "https://github.com/Themis3000/zikuuu.git"
+      },
+      {
+         "options": [
+            "ANY"
+         ]
+      }
    ]
 }
