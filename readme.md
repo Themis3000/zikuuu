@@ -1,13 +1,13 @@
-#Zikuuu
-######*A fun(ish) discord bot*
-##Setup
+# Zikuuu
+###### *A fun(ish) discord bot*
+## Setup
 * Set local var "TOKEN" to your discord bot token
 * Set local var "MONGO_SERVER", "MONGO_USER", and "MONGO_PASS" to your mongodb server's address, username, and password
 * Make sure you have all dependencies in "requirements.txt" fulfilled
 * Rurururun that! (with python3)
 * Change newly created config.json file to suit your needs (don't forget to make yourself admin of the bot)
 
-##config.json
+## config.json
 Config.json is set up in an, erm, *interesting* way. So let me take you through the basics of the structure
 ```
 "repository": [
@@ -40,7 +40,7 @@ Here's another example:
 ]
 ```
 So here "status_booting" is set to "idle" and it can only be set to "online", "idle", "offline", or "dnd"
-####config.json reference
+#### config.json reference
 Setting | Meaning
 --------|--------
 status | The default status the bot will mark it's self as when it finishes starting up
@@ -52,7 +52,7 @@ unload_cog | Does absolutely nothing!
 bot_owners | Set who owns the bot
 repository | The repo link for this bot
 
-##commands reference
+## commands reference
 Command | Function
 --------|---------
 allow | Allow someone to join the voice channel you are in one time only
