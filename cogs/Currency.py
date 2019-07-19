@@ -1,15 +1,17 @@
 from discord.ext import commands
-from utils.mongo import get_user, get_coinz, change_coinz, set_coinz, faucet, new_pet, battle_results
+from utils.mongo import get_user, get_coinz, change_coinz, faucet, new_pet, battle_results, start_raid
 import random
 from utils.makeReadable import array_to_space_list, seconds_to_readable
 from utils.options import check_current
 import asyncio
 import discord
+import time
 
 sent_requests = []
 pets = ["🐱", "🐭", "🐶", "🐷", "🐮", "🐔", "🦁"]
 emojis = [":bell:", ":watermelon:", ":gem:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
 win_amounts = {":bell:": 8, ":watermelon:": 6, ":gem:": 18, ":eggplant:": 10, ":tangerine:": 6}
+raids = {"1⃣": {"time": 10800, "coinz": 3, "addition_potential": 2}, "2⃣": {"time": 21600, "coinz": 8, "addition_potential": 7}, "3⃣": {"time": 43200, "coinz": 15, "addition_potential": 15}, "4⃣": {"time": 86400, "coinz": 30, "addition_potential": 30}}
 
 
 class Currency(commands.Cog):
@@ -129,7 +131,7 @@ class Currency(commands.Cog):
                                     await accept_message.add_reaction("❌")
 
                                     def check_accept(reaction, sender):
-                                        return sender == defending and reaction.emoji in ["✅", "❌"] or sender == ctx.author and reaction.emoji == "❌"
+                                        return sender == defending and reaction.emoji in ["✅", "❌"] and reaction.message.id == accept_message.id or sender == ctx.author and reaction.emoji == "❌" and reaction.message.id == accept_message.id
 
                                     try:
                                         reaction, sender = await self.bot.wait_for('reaction_add', timeout=120, check=check_accept)
@@ -223,7 +225,7 @@ class Currency(commands.Cog):
                         else:
                             await ctx.send("You do not have enough coinz")
                     else:
-                        await ctx.send("The person who you challenged does not have a pet, use +pet to buy one")
+                        await ctx.send(f"The person who you challenged does not have a pet, use {check_current('prefix')}buypet to buy one")
                 else:
                     await ctx.send("You need a pet to play, use +pet to buy one")
             else:
@@ -239,6 +241,66 @@ class Currency(commands.Cog):
             await ctx.send(f"Your pet {user['pet']['name']}'s stats:\nWins: {user['pet']['win']}\nLosses: {user['pet']['loss']}")
         else:
             await ctx.send("You do not have a pet!")
+
+    @commands.group()
+    async def raid(self, ctx):
+        """Check on your raid status"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Silly, what are ya doin?")
+            print(ctx.message.content)
+
+    @raid.command()
+    async def start(self, ctx):
+        """Start a raid"""
+        user = get_user(ctx.author.id)
+        if "pet" in user:
+            if "raid" not in user or not user["raid"]["end_time"] > time.time():
+                    selection = await ctx.send("Keep in mind when you send your pet on a raid you cannot interact with them until they get back, this includes battles\n\n"
+                                               "What difficulty would you like?\n"
+                                               ":one:: easy - 3 hours, up to 5 coinz\n"
+                                               ":two:: medium - 6 hours, up to 15 coinz\n"
+                                               ":three:: hard - 12 hours, up to 30 coinz\n"
+                                               ":four:: very hard - 24 hours, up to 60 coinz\n")
+                    await selection.add_reaction("1⃣")
+                    await selection.add_reaction("2⃣")
+                    await selection.add_reaction("3⃣")
+                    await selection.add_reaction("4⃣")
+
+                    def check_difficulty(reaction, sender):
+                        return sender == ctx.author and reaction.emoji in ["1⃣", "2⃣", "3⃣", "4⃣"] and reaction.message.id == selection.id
+
+                    try:
+                        difficulty, sender = await self.bot.wait_for('reaction_add', timeout=120, check=check_difficulty)
+                    except asyncio.TimeoutError:
+                        await selection.add_reaction("⏰")
+                    else:
+                        await selection.clear_reactions()
+                        await selection.edit(content="Would you like to allow others to join the raid?")
+                        await selection.add_reaction("✅")
+                        await selection.add_reaction("❌")
+
+                        def check_open(reaction, sender):
+                            return sender == ctx.author and reaction.emoji in ["✅", "❌"] and reaction.message.id == selection.id
+
+                        try:
+                            reaction, sender = await self.bot.wait_for('reaction_add', timeout=120, check=check_open)
+                        except asyncio.TimeoutError:
+                            await selection.add_reaction("⏰")
+                        else:
+                            await selection.delete()
+
+                            if reaction.emoji == "✅":
+                                party = await ctx.send(f"If you would like to send off your pet join {ctx.author.mention}'s raid that will take {seconds_to_readable(raids[difficulty.emoji]['time'])} hours and yield up to {raids[difficulty.emoji]['coinz']} coinz, hit :white_check_mark:. for every person that joins a 20% bonus is added. Press :play_pause: to start the raid or  will automatically start in 4 minutes\n\n"
+                                                       "Keep in mind when you send your pet on a raid you cannot interact with your pet until they get back, this includes battles.")
+                                await party.add_reaction("✅")
+                                await party.add_reaction("⏯")
+                            elif reaction.emoji == "❌":
+                                start_raid(ctx.author.id, raids[difficulty.emoji]["time"], raids[difficulty.emoji]["coinz"] + random.randint(0, raids[difficulty.emoji]["addition_potential"]))
+                                await ctx.send(f"{ctx.author.mention}'s {user['pet']['emote']} {user['pet']['name']} has sent off on a quest for {seconds_to_readable(raids[difficulty.emoji]['time'])} for up to {raids[difficulty.emoji]['coinz'] + raids[difficulty.emoji]['addition_potential']} coinz")
+            else:
+                await ctx.send("You are already in a raid")
+        else:
+            await ctx.send(f"You need a pet in order to do this, you can buy one with {check_current('prefix')}buypet")
 
 
 def setup(bot):
