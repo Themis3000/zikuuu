@@ -129,7 +129,7 @@ class Currency(commands.Cog):
                                     await accept_message.add_reaction("❌")
 
                                     def check_accept(reaction, sender):
-                                        return sender == defending and reaction.emoji in ["✅", "❌"] or sender == ctx.author and reaction.emoji == "❌"
+                                        return sender == defending and reaction.emoji in ["✅", "❌"] and reaction.message.id == accept_message.id or sender == ctx.author and reaction.emoji == "❌" and reaction.message.id == accept_message.id
 
                                     try:
                                         reaction, sender = await self.bot.wait_for('reaction_add', timeout=120, check=check_accept)
