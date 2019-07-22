@@ -237,7 +237,7 @@ class Currency(commands.Cog):
                 else:
                     await ctx.send("The person you challenged does is currently in a raid so they cannot battle")
             else:
-                await ctx.send("You are currently and a raid so you cannot battle")
+                await ctx.send("You are currently in a raid so you cannot battle")
         else:
             await ctx.send("You cannot battle yourself")
 
