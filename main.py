@@ -33,6 +33,8 @@ async def on_command_error(ctx, error):
         await send_cmd_help(ctx)
     elif isinstance(error, commands.BadArgument):
         await send_cmd_help(ctx)
+    elif isinstance(error, commands.CommandOnCooldown):
+        await ctx.send(f"{ctx.author.mention} You are using that command too often, chill out there buddyo. You can use that command {error.cooldown.rate} times per {int(error.cooldown.per)} seconds, and you can use it next in {round(error.retry_after, 2)} seconds")
 
 
 async def send_cmd_help(ctx):

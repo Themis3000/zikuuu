@@ -6,6 +6,7 @@ from utils.options import check_current
 import asyncio
 import discord
 import time
+from discord.ext.commands.cooldowns import BucketType
 
 sent_requests = []
 pets = ["🐱", "🐭", "🐶", "🐷", "🐮", "🐔", "🦁"]
@@ -34,6 +35,7 @@ class Currency(commands.Cog):
             await ctx.send(f"Hold on there partner, you still got some wait'n. {seconds_to_readable(coinz[1])} to go")
 
     @commands.command()
+    @commands.cooldown(5, 20, type=BucketType.user)
     async def slots(self, ctx, amount: int):
         """Lose your life savings in a game of slots!"""
         coinz = get_coinz(ctx.author.id)
