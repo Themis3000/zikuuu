@@ -4,7 +4,7 @@ import time
 
 client = pymongo.MongoClient(f"mongodb+srv://{os.environ['MONGO_USER']}:{os.environ['MONGO_PASS']}@{os.environ['MONGO_SERVER']}")
 
-userdata = client["userdata"]
+userdata = client[os.environ['DATABASE']]
 discorduserdata = userdata["discorduserdata"]
 
 
@@ -44,8 +44,6 @@ def set_coinz(id, amount):
     user = get_user(id)
     discorduserdata.update_one(user, {"$set": {"coinz": amount}})
 
-# todo:Themi make it is last faucet var is stored as full seconds without a decemal
-
 
 def faucet(id, amount, cooldown):
     user = get_user(id)
@@ -55,3 +53,14 @@ def faucet(id, amount, cooldown):
         return [True, new_balence]
     else:
         return [False, user["last_faucet"] + cooldown - int(str(time.time()).split(".")[0])]
+
+
+def start_raid(id, length, reward):
+    user = get_user(id)
+    current_time = int(time.time())
+    discorduserdata.update_one(user, {"$set": {"raid": {"start_time": current_time, "end_time": current_time + length, "reward": reward}}})
+
+
+def end_raid(id):
+    user = get_user(id)
+    discorduserdata.update_one(user, {"$set": {"coinz": user['coinz'] + user['raid']['reward']}, "$unset": {"raid": {}}})

@@ -2,7 +2,7 @@
 ###### *A fun(ish) discord bot*
 ## Setup
 * Set local var "TOKEN" to your discord bot token
-* Set local var "MONGO_SERVER", "MONGO_USER", and "MONGO_PASS" to your mongodb server's address, username, and password
+* Set local var "MONGO_SERVER", "MONGO_USER", "MONGO_PASS", "DATABASE" to your mongodb server's address, username, password, and database you want zikuuu's data to be stored under
 * Make sure you have all dependencies in "requirements.txt" fulfilled
 * Rurururun that! (with python3)
 * Change newly created config.json file to suit your needs (don't forget to make yourself admin of the bot)
