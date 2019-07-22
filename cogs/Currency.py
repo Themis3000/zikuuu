@@ -313,7 +313,7 @@ class Currency(commands.Cog):
                         await selection.delete()
 
                         if reaction.emoji == "✅":
-                            party = await ctx.send(f"If you would like to send off your pet join {ctx.author.mention}'s raid that will take {seconds_to_readable(raids[difficulty.emoji]['time'])} hours and yield up to {raids[difficulty.emoji]['coinz']} coinz, hit :white_check_mark:. for every person that joins a 30% bonus is added. Press :play_pause: to start the raid or  will automatically start if no one joins for 4 minutes\n\n"
+                            party = await ctx.send(f"If you would like to send off your pet join {ctx.author.mention}'s raid that will take {seconds_to_readable(raids[difficulty.emoji]['time'])} hours and yield up to {raids[difficulty.emoji]['coinz'] + raids[difficulty.emoji]['addition_potential']} coinz, hit :white_check_mark:. for every person that joins a 30% bonus is added. Press :play_pause: to start the raid or  will automatically start if no one joins for 4 minutes\n\n"
                                                    "Keep in mind when you send your pet on a raid you cannot interact with your pet until they get back, this includes battles.")
                             await party.add_reaction("✅")
                             await party.add_reaction("⏯")
