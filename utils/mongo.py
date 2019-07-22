@@ -59,3 +59,8 @@ def start_raid(id, length, reward):
     user = get_user(id)
     current_time = int(time.time())
     discorduserdata.update_one(user, {"$set": {"raid": {"start_time": current_time, "end_time": current_time + length, "reward": reward}}})
+
+
+def end_raid(id):
+    user = get_user(id)
+    discorduserdata.update_one(user, {"$set": {"coinz": user['coinz'] + user['raid']['reward']}, "$unset": {"raid": {}}})
