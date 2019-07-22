@@ -36,13 +36,12 @@ def get_coinz(id):
 def change_coinz(id, amount):
     user = get_user(id)
     new_value = user["coinz"] + amount
-    discorduserdata.update_many(user, {"$set": {"coinz": new_value}})
+    discorduserdata.update_one(user, {"$set": {"coinz": new_value}})
     return new_value
 
 
 def set_coinz(id, amount):
-    user = get_user(id)
-    discorduserdata.update_one(user, {"$set": {"coinz": amount}})
+    discorduserdata.update_one({"_id": id}, {"$set": {"coinz": amount}})
 
 
 def faucet(id, amount, cooldown):

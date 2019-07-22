@@ -1,5 +1,5 @@
 from discord.ext import commands
-from utils.mongo import get_user, get_coinz, change_coinz, faucet, new_pet, battle_results, start_raid, end_raid
+from utils.mongo import get_user, get_coinz, change_coinz, faucet, new_pet, battle_results, start_raid, end_raid, set_coinz
 import random
 from utils.makeReadable import array_to_space_list, seconds_to_readable
 from utils.options import check_current
@@ -9,8 +9,8 @@ import time
 
 sent_requests = []
 pets = ["🐱", "🐭", "🐶", "🐷", "🐮", "🐔", "🦁"]
-emojis = [":bell:", ":watermelon:", ":gem:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
-win_amounts = {":bell:": 8, ":watermelon:": 6, ":gem:": 18, ":eggplant:": 10, ":tangerine:": 6}
+emojis = [":bell:", ":gem:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
+win_amounts = {":bell:": 8, ":gem:": 18, ":eggplant:": 10, ":tangerine:": 6}
 raids = {"1⃣": {"time": 5400, "coinz": 5, "addition_potential": 5}, "2⃣": {"time": 10800, "coinz": 15, "addition_potential": 15}, "3⃣": {"time": 21600, "coinz": 30, "addition_potential": 30}, "4⃣": {"time": 43200, "coinz": 60, "addition_potential": 60}}
 
 
@@ -43,21 +43,21 @@ class Currency(commands.Cog):
                 for i in range(0, 3):
                     reel.append(random.choice(emojis))
                 if ":poop:" in reel:
-                    change_coinz(ctx.author.id, -1 * amount)
+                    set_coinz(ctx.author.id, coinz - amount)
                     message = "poopy spin... no win :("
                 elif reel.count(":cherries:") > 0:
                     win_amount = reel.count(":cherries:") * 4
-                    change_coinz(ctx.author.id, win_amount - amount)
+                    set_coinz(ctx.author.id, coinz + win_amount - amount)
                     if win_amount > amount:
                         message = f"Got {reel.count(':cherries:')} :cherries: and won {win_amount} coinz!"
                     else:
                         message = f"Got {reel.count(':cherries:')} :cherries: and won {win_amount} coinz, but spent {amount} on the spin"
                 elif reel[0] == reel[1] and reel[1] == reel[2]:
                     win_amount = win_amounts[reel[0]] * amount
-                    change_coinz(ctx.author.id, win_amount - amount)
+                    set_coinz(ctx.author.id, coinz + win_amount - amount)
                     message = f"Won {win_amount + amount} coinz!! Woo!"
                 else:
-                    change_coinz(ctx.author.id, -1 * amount)
+                    set_coinz(ctx.author.id, coinz - amount)
                     message = f"no win :( lost {amount}"
                 await ctx.send(array_to_space_list(reel) + "\n" + message)
             else:
