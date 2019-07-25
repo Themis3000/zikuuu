@@ -352,7 +352,7 @@ class Currency(commands.Cog):
                                         start = True
                                         break
                             if start:
-                                reward = int((raids[difficulty.emoji]["coinz"] + random.randint(0, raids[difficulty.emoji]["addition_potential"])) * (len(group) * .3))
+                                reward = int((raids[difficulty.emoji]["coinz"] + random.randint(0, raids[difficulty.emoji]["addition_potential"])) * (1 + ((len(group) - 1) * .3)))
                                 for user in group:
                                     check_user = get_user(user)
                                     if "raid" not in check_user or not check_user["raid"]["end_time"] > time.time():
