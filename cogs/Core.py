@@ -60,7 +60,7 @@ class Core(commands.Cog):
         else:
             await ctx.send(f"not a valid status, valid status options are: {array_to_comma_list(status_options)}")
 
-    @commands.command()
+    @commands.command(aliases=["repository", "github", "git"])
     async def repo(self, ctx):
         """View the git repo for this bot"""
         await ctx.send(f"You can find the project repo at {check_current('repository')}")
@@ -69,6 +69,14 @@ class Core(commands.Cog):
     async def invite(self, ctx):
         """Get the invite link for this bot"""
         await ctx.send(f"Invite link for this bot: {check_current('invite')}")
+
+    @commands.command(aliases=["servercount", "guilds", "guildcount"])
+    async def servers(self, ctx):
+        """The amount of servers the bot is in"""
+        members = 0
+        for guild in self.bot.guilds:
+            members += guild.member_count
+        await ctx.send(f"I am currently in {len(self.bot.guilds)} servers with a total of {members} members")
 
 
 def setup(bot):
