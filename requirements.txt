@@ -1,4 +1,4 @@
-discord.py
-requests
-pymongo
-dnspython
+discord.py==1.2.3
+requests==2.21.0
+pymongo==3.7.2
+dnspython==1.16.0
