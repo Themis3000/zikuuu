@@ -65,6 +65,11 @@ class Core(commands.Cog):
         """View the git repo for this bot"""
         await ctx.send(f"You can find the project repo at {check_current('repository')}")
 
+    @commands.command()
+    async def invite(self, ctx):
+        """Get the invite link for this bot"""
+        await ctx.send(f"Invite link for this bot: {check_current('invite')}")
+
 
 def setup(bot):
     bot.add_cog(Core(bot))
