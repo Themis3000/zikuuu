@@ -86,5 +86,15 @@
             "ANY"
          ]
       }
+   ],
+   "invite": [
+      {
+         "current": "https://discordapp.com/oauth2/authorize?client_id=541389273526698007&scope=bot&permissions=8"
+      },
+      {
+         "options": [
+            "ANY"
+         ]
+      }
    ]
 }
