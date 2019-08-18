@@ -1,5 +1,5 @@
 from discord.ext import commands
-from utils.mongo import get_user, get_coinz, change_coinz, faucet, new_pet, battle_results, start_raid, end_raid, set_coinz
+from utils.mongo import get_user, get_coinz, change_coinz, faucet, new_pet, battle_results, start_raid, end_raid, set_coinz, get_top_coinz
 import random
 from utils.makeReadable import array_to_space_list, seconds_to_readable
 from utils.options import check_current
@@ -366,6 +366,16 @@ class Currency(commands.Cog):
                 await ctx.send(f"{user['pet']['emote']} {user['pet']['name']} is already in a raid")
         else:
             await ctx.send(f"You need a pet in order to do this, you can buy one with {check_current('prefix')}buypet")
+
+    @commands.command()
+    async def gettop(self, ctx):
+        """check who has the most coinz"""
+        top_coinz = get_top_coinz(amount=5)
+        leader_board = ""
+        for user in top_coinz:
+            discord_user = await self.bot.fetch_user(user['_id'])
+            leader_board = leader_board + f"{user['coinz']} coinz - {discord_user.name}\n"
+        await ctx.send(leader_board)
 
 
 def setup(bot):

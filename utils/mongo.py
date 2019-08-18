@@ -63,3 +63,9 @@ def start_raid(id, length, reward):
 def end_raid(id):
     user = get_user(id)
     discorduserdata.update_one(user, {"$set": {"coinz": user['coinz'] + user['raid']['reward']}, "$unset": {"raid": {}}})
+
+
+def get_top_coinz(amount=1):
+    return discorduserdata.find().sort([("coinz", -1)]).limit(amount)
+
+
