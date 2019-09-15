@@ -74,6 +74,3 @@ slotspayouts | Get tempted into playing slots
 stats | See your pets stats and show off your superiority
 dadjoke | Get a dad joke from the dada-base (aka icanhazdadjoke.com)
 help | Shows the help message
-
-
-Be sure to send all of your money to tcm4760@gmail.com on paypal
