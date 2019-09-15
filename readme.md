@@ -63,11 +63,15 @@ set_game | Sets the status of the bot (online, offline, dnd, busy)
 set_status | Sets the bot online status
 battle | Heck someone up and take their coinz gang gang style
 buypet | Get yo self a pet for your travels
+raid | Raid commands help
+raid start | Starts a raid
+raid status | Shows the status of your current raid
 coinz | Checks the amount of cool coinz you have
 getcoinz | Claim some of that mulah
+gettop | Get the top 5 coinz holders
 slots | Lose your life savings in a game of slots!
 slotspayouts | Get tempted into playing slots
-stats | Show off your superiority
+stats | See your pets stats and show off your superiority
 dadjoke | Get a dad joke from the dada-base (aka icanhazdadjoke.com)
 help | Shows the help message
 
