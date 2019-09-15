@@ -12,7 +12,7 @@ sent_requests = []
 pets = ["🐱", "🐭", "🐶", "🐷", "🐮", "🐔", "🦁"]
 emojis = [":bell:", ":gem:", ":cherries:", ":eggplant:", ":tangerine:", ":poop:"]
 win_amounts = {":bell:": 8, ":gem:": 18, ":eggplant:": 10, ":tangerine:": 6}
-raids = {"1⃣": {"time": 5400, "coinz": 5, "addition_potential": 5}, "2⃣": {"time": 10800, "coinz": 15, "addition_potential": 15}, "3⃣": {"time": 21600, "coinz": 30, "addition_potential": 30}, "4⃣": {"time": 43200, "coinz": 60, "addition_potential": 60}}
+raids = {"1⃣": {"time": 10800, "coinz": 5, "addition_potential": 5}, "2⃣": {"time": 21600, "coinz": 15, "addition_potential": 15}, "3⃣": {"time": 43200, "coinz": 30, "addition_potential": 30}, "4⃣": {"time": 86400, "coinz": 60, "addition_potential": 60}}
 
 
 class Currency(commands.Cog):
@@ -282,10 +282,10 @@ class Currency(commands.Cog):
                     end_raid(ctx.author.id)
                 selection = await ctx.send("Keep in mind when you send your pet on a raid you cannot interact with them until they get back, this includes battles\n\n"
                                            "What difficulty would you like?\n"
-                                           ":one:: easy - 1.5 hours, up to 10 coinz\n"
-                                           ":two:: medium - 3 hours, up to 30 coinz\n"
-                                           ":three:: hard - 6 hours, up to 60 coinz\n"
-                                           ":four:: very hard - 12 hours, up to 120 coinz\n")
+                                           ":one:: easy - 3 hours, up to 10 coinz\n"
+                                           ":two:: medium - 6 hours, up to 30 coinz\n"
+                                           ":three:: hard - 12 hours, up to 60 coinz\n"
+                                           ":four:: very hard - 24 hours, up to 120 coinz\n")
                 await selection.add_reaction("1⃣")
                 await selection.add_reaction("2⃣")
                 await selection.add_reaction("3⃣")
